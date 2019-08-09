@@ -1,17 +1,24 @@
-FROM quay.io/deis/lightweight-docker-go:v0.2.0
-FROM debian:stretch
-COPY --from=0 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+FROM mcr.microsoft.com/azure-cli AS cli-base
 
-ARG BUNDLE_DIR
+RUN apk update
+RUN apk add -u bash
 
-# This is a template Dockerfile for the bundle's invocation image
-# You can customize it to use different base images, install tools and copy configuration files.
-#
-# Porter will use it as a template and append lines to it for the mixins
-# and to set the CMD appropriately for the CNAB specification.
-#
-# Add the following line to porter.yaml to instruct Porter to use this template
-# dockerfile: Dockerfile.tmpl
+ # Set the working directory to /app
+#WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+#COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN az extension add --name azure-cli-iot-ext
 
 # Use the BUNDLE_DIR build argument to copy files into the bundle
 # COPY . $BUNDLE_DIR
+
+# this was in the duffle version
+# COPY Dockerfile /cnab/Dockerfile
+# COPY app /cnab/app
+
+CMD ["/cnab/app/run"]
+
+

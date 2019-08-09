@@ -3,14 +3,14 @@
 # See https://porter.sh/authoring-bundles for documentation on how to configure your bundle
 # Uncomment out the sections below to take full advantage of what Porter can do!
 
-name: HELLO
+name: porter-iot-sql
 version: 0.1.0
-description: "An example Porter configuration"
+description: "A porter configuration"
 invocationImage: porter-hello:latest
 tag: deislabs/porter-hello-bundle:latest
 
 # Uncomment out the line below to use a template Dockerfile for your invocation image
-#dockerfile: Dockerfile.tmpl
+dockerfile: Dockerfile.tmpl
 
 mixins:
   - exec
