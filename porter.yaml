@@ -6,8 +6,8 @@
 name: porter-iot-sql
 version: 0.1.0
 description: "A porter configuration"
-invocationImage: porter-hello:latest
-tag: deislabs/porter-hello-bundle:latest
+invocationImage: porter-iot-sql:0.1.0
+tag: squillace/porter-iot-sql:0.1.0
 
 # Uncomment out the line below to use a template Dockerfile for your invocation image
 dockerfile: Dockerfile.tmpl
@@ -16,29 +16,88 @@ mixins:
   - exec
 
 install:
-  - exec:
-      description: "Install Hello World"
-      command: bash
-      arguments:
-        - -c
-        - echo Hello World
+  - exec: 
+      description: "Azure CLI login"
+      command: "az"
+      arguments: 
+        - "login" 
+        - "--service-principal"
+        - "--username" 
+        - "{{ bundle.credentials.AZURE_CLIENT_ID}}"
+        - "--password" 
+        - "{{ bundle.credentials.AZURE_SP_PASSWORD}}"
+        - "--tenant" 
+        - "{{ bundle.credentials.TENANT_DNS}}"
+
+
+#az iot edge deployment create --deployment-id "$DEPLOYMENT_ID" --hub-name "$HUB_NAME" --content /cnab/app/deploy/sql-deployment.json --target-condition "tags.name = '$CONDITION'"
+  - exec: 
+      description: "Azure IoT Edge deployment"
+      command: "az"
+      arguments: 
+        - "iot"
+        - "edge"
+        - "deployment"
+        - "create"
+        - "--deployment-id"
+        - "{{ bundle.parameters.DEPLOYMENT_ID }}" 
+        - "--hub-name"
+        - "{{ bundle.parameters.HUB_NAME }}"
+        - "--content"
+        - "deployment.json"
+        - "--target-condition"
+        - "tags.name = '{{ bundle.parameters.CONDITION }}'"
 
 upgrade:
-  - exec:
-      description: "World 2.0"
-      command: bash
-      arguments:
-        - -c
-        - echo World 2.0
+  - exec: 
+      description: "Azure CLI login"
+      command: "az"
+      arguments: 
+        - "login" 
+        - "--service-principal"
+        - "--username" 
+        - "{{ bundle.credentials.AZURE_CLIENT_ID}}"
+        - "--password" 
+        - "{{ bundle.credentials.AZURE_SP_PASSWORD}}"
+        - "--tenant" 
+        - "{{ bundle.credentials.TENANT_DNS}}"
 
 uninstall:
-  - exec:
-      description: "Uninstall Hello World"
-      command: bash
-      arguments:
-        - -c
-        - echo Goodbye World
+  - exec: 
+      description: "Azure CLI login"
+      command: "az"
+      arguments: 
+        - "login" 
+        - "--service-principal"
+        - "--username" 
+        - "{{ bundle.credentials.AZURE_CLIENT_ID}}"
+        - "--password" 
+        - "{{ bundle.credentials.AZURE_SP_PASSWORD}}"
+        - "--tenant" 
+        - "{{ bundle.credentials.TENANT_DNS}}"
 
+  - exec: 
+      description: "Azure IoT Edge deployment: Removing the modules."
+      command: "az"
+      arguments: 
+        - "iot"
+        - "edge"
+        - "deployment"
+        - "create"
+        - "--deployment-id"
+        - "removing-{{ bundle.parameters.DEPLOYMENT_ID }}" 
+        - "--hub-name"
+        - "{{ bundle.parameters.HUB_NAME }}"
+        - "--content"
+        - "undeployment.json"
+        - "--target-condition"
+        - "tags.name = '{{ bundle.parameters.CONDITION }}'"
+
+  - exec:
+      description: ""
+      command: "echo"
+      arguments:
+        - "Please check and remove any deployments that involved these modules."
 
 # See https://porter.sh/authoring-bundles/#dependencies
 #dependencies:
@@ -48,6 +107,34 @@ uninstall:
 #      database-name: wordpress
 
 # See https://porter.sh/wiring/#credentials
-#credentials:
-#  - name: kubeconfig
-#    path: /root/.kube/config
+credentials:
+  - name: SUBSCRIPTION_ID
+    env: AZURE_SUBSCRIPTION_ID
+  - name: AZURE_CLIENT_ID
+    env: AZURE_CLIENT_ID
+  - name: TENANT_DNS
+    env: TENANT_DNS
+  - name: AZURE_SP_PASSWORD
+    env: AZURE_SP_PASSWORD
+
+parameters:
+  - name: AZURE_RESOURCE_GROUP
+    type: string
+    default: IoTEdgeResources
+    destination:
+      env: APP_RESOURCE_GROUP
+  - name: CONDITION
+    type: string
+    default: target
+    destination:
+      env: CONDITION
+  - name: DEPLOYMENT_ID
+    type: string
+    default: sql
+    destination:
+      env: DEPLOYMENT_ID
+  - name: HUB_NAME
+    type: string
+    default: cnab-hub
+    destination:
+      env: HUB_NAME
