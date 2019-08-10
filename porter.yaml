@@ -6,14 +6,20 @@
 name: porter-iot-sql
 version: 0.1.0
 description: "A porter configuration"
-invocationImage: porter-iot-sql:0.1.0
-tag: squillace/porter-iot-sql:0.1.0
+invocationImage: squillace.azurecr.io/squillace/porter-iot-sql:0.1.0
+tag: squillace.azurecr.io/squillace/porter-iot-sql:0.1.0
 
 # Uncomment out the line below to use a template Dockerfile for your invocation image
 dockerfile: Dockerfile.tmpl
 
 mixins:
   - exec
+
+customActions:
+  status:
+    description: "Getting the status of the Azure IoT deployments."
+    stateless: false
+    modifies: false
 
 install:
   - exec: 
@@ -99,6 +105,24 @@ uninstall:
       arguments:
         - "Please check and remove any deployments that involved these modules."
 
+
+status:
+  - exec: 
+      description: "Azure IoT Edge deployment: Removing the modules."
+      command: "az"
+      arguments: 
+        - "iot"
+        - "edge"
+        - "deployment"
+        - "list"
+        - "--resource-group"
+        - "{{ bundle.parameters.AZURE_RESOURCE_GROUP }}"
+        - "--hub-name"
+        - "{{ bundle.parameters.HUB_NAME }}"
+        - "--query"
+        - "'[].{ID:id,Priority:priority,Applied:systemMetrics.results.appliedCount,Targeted:systemMetrics.results.targetedCount,Failed:systemMetrics.results.reportedFailedCount,Succeeded:systemMetrics.results.reportedSuccessfulCount,Target:targetCondition,Created:createdTimeUtc,Updated:lastUpdatedTimeUtc}'"
+
+
 # See https://porter.sh/authoring-bundles/#dependencies
 #dependencies:
 #  mysql:
@@ -122,7 +146,7 @@ parameters:
     type: string
     default: IoTEdgeResources
     destination:
-      env: APP_RESOURCE_GROUP
+      env: AZURE_RESOURCE_GROUP
   - name: CONDITION
     type: string
     default: target
