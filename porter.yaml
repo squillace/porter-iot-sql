@@ -108,7 +108,20 @@ uninstall:
 
 status:
   - exec: 
-      description: "Azure IoT Edge deployment: Removing the modules."
+      description: "Azure CLI login"
+      command: "az"
+      arguments: 
+        - "login" 
+        - "--service-principal"
+        - "--username" 
+        - "{{ bundle.credentials.AZURE_CLIENT_ID}}"
+        - "--password" 
+        - "{{ bundle.credentials.AZURE_SP_PASSWORD}}"
+        - "--tenant" 
+        - "{{ bundle.credentials.TENANT_DNS}}"
+
+  - exec: 
+      description: "Azure IoT Edge deployment: Querying the deployments."
       command: "az"
       arguments: 
         - "iot"
@@ -120,7 +133,9 @@ status:
         - "--hub-name"
         - "{{ bundle.parameters.HUB_NAME }}"
         - "--query"
-        - "'[].{ID:id,Priority:priority,Applied:systemMetrics.results.appliedCount,Targeted:systemMetrics.results.targetedCount,Failed:systemMetrics.results.reportedFailedCount,Succeeded:systemMetrics.results.reportedSuccessfulCount,Target:targetCondition,Created:createdTimeUtc,Updated:lastUpdatedTimeUtc}'"
+        - "[].{ID:id,Priority:priority,Applied:systemMetrics.results.appliedCount,Targeted:systemMetrics.results.targetedCount,Failed:systemMetrics.results.reportedFailedCount,Succeeded:systemMetrics.results.reportedSuccessfulCount,Target:targetCondition,Created:createdTimeUtc,Updated:lastUpdatedTimeUtc}"
+        - "--output"
+        - "table"
 
 
 # See https://porter.sh/authoring-bundles/#dependencies
