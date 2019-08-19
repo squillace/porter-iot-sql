@@ -4,10 +4,10 @@
 # Uncomment out the sections below to take full advantage of what Porter can do!
 
 name: porter-iot-sql
-version: 0.1.0
+version: 0.2.0
 description: "A porter configuration"
-invocationImage: squillace.azurecr.io/squillace/porter-iot-sql:0.1.0
-tag: squillace.azurecr.io/squillace/porter-iot-sql:0.1.0
+invocationImage: squillace.azurecr.io/squillace/porter-iot-sql:0.2.0
+tag: squillace.azurecr.io/squillace/porter-iot-sql:0.2.0
 
 # Uncomment out the line below to use a template Dockerfile for your invocation image
 dockerfile: Dockerfile.tmpl
@@ -16,10 +16,15 @@ mixins:
   - exec
 
 customActions:
-  status:
+  com.azure.iot.deployment.status:
     description: "Getting the status of the Azure IoT deployments."
     stateless: false
     modifies: false
+  com.azure.iot.deploy-purge:
+    description: "Destroys all the Azure IoT deployments in the IoT Hub. This leaves the modules themselves running."
+    stateless: false
+    modifies: true
+
 
 install:
   - exec: 
@@ -103,10 +108,10 @@ uninstall:
       description: ""
       command: "echo"
       arguments:
-        - "Please check and remove any deployments that involved these modules."
+        - "Please check and remove any deployments that involved these modules with ."
 
 
-status:
+com.azure.iot.deployment.status:
   - exec: 
       description: "Azure CLI login"
       command: "az"
@@ -137,7 +142,25 @@ status:
         - "--output"
         - "table"
 
+com.azure.iot.deploy-purge:
+  - exec: 
+      description: "Azure CLI login"
+      command: "az"
+      arguments: 
+        - "login" 
+        - "--service-principal"
+        - "--username" 
+        - "{{ bundle.credentials.AZURE_CLIENT_ID}}"
+        - "--password" 
+        - "{{ bundle.credentials.AZURE_SP_PASSWORD}}"
+        - "--tenant" 
+        - "{{ bundle.credentials.TENANT_DNS}}"
 
+  - exec: 
+      description: "Azure IoT Edge deployment: Querying the deployments."
+      command: "bash"
+      arguments: 
+        - "deploy-purge.sh"
 
 
 
@@ -150,8 +173,6 @@ status:
 
 # See https://porter.sh/wiring/#credentials
 credentials:
-  - name: SUBSCRIPTION_ID
-    env: AZURE_SUBSCRIPTION_ID
   - name: AZURE_CLIENT_ID
     env: AZURE_CLIENT_ID
   - name: TENANT_DNS
@@ -180,3 +201,4 @@ parameters:
     default: cnab-hub
     destination:
       env: HUB_NAME
+
