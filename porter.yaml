@@ -36,8 +36,6 @@ install:
         - "--tenant" 
         - "{{ bundle.credentials.TENANT_DNS}}"
 
-
-#az iot edge deployment create --deployment-id "$DEPLOYMENT_ID" --hub-name "$HUB_NAME" --content /cnab/app/deploy/sql-deployment.json --target-condition "tags.name = '$CONDITION'"
   - exec: 
       description: "Azure IoT Edge deployment"
       command: "az"
