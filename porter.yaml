@@ -20,10 +20,6 @@ customActions:
     description: "Getting the status of the Azure IoT deployments."
     stateless: false
     modifies: false
-  com.azure.iot.deploy-purge:
-    description: "Destroys all the Azure IoT deployments in the IoT Hub. This leaves the modules themselves running."
-    stateless: false
-    modifies: true
 
 
 install:
@@ -88,7 +84,7 @@ uninstall:
         - "{{ bundle.credentials.TENANT_DNS}}"
 
   - exec: 
-      description: "Azure IoT Edge deployment: Removing the modules."
+      description: "Azure IoT Edge deployment: Deploying to removing the modules."
       command: "az"
       arguments: 
         - "iot"
@@ -108,7 +104,7 @@ uninstall:
       description: ""
       command: "echo"
       arguments:
-        - "Please check and remove any deployments that involved these modules with ."
+        - "Please check and remove any deployments that involved these modules with the status command."
 
 
 com.azure.iot.deployment.status:
@@ -141,26 +137,6 @@ com.azure.iot.deployment.status:
         - "[].{ID:id,Priority:priority,Applied:systemMetrics.results.appliedCount,Targeted:systemMetrics.results.targetedCount,Failed:systemMetrics.results.reportedFailedCount,Succeeded:systemMetrics.results.reportedSuccessfulCount,Target:targetCondition,Created:createdTimeUtc,Updated:lastUpdatedTimeUtc}"
         - "--output"
         - "table"
-
-com.azure.iot.deploy-purge:
-  - exec: 
-      description: "Azure CLI login"
-      command: "az"
-      arguments: 
-        - "login" 
-        - "--service-principal"
-        - "--username" 
-        - "{{ bundle.credentials.AZURE_CLIENT_ID}}"
-        - "--password" 
-        - "{{ bundle.credentials.AZURE_SP_PASSWORD}}"
-        - "--tenant" 
-        - "{{ bundle.credentials.TENANT_DNS}}"
-
-  - exec: 
-      description: "Azure IoT Edge deployment: Querying the deployments."
-      command: "bash"
-      arguments: 
-        - "deploy-purge.sh"
 
 
 

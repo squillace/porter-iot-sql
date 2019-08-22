@@ -1,6 +1,6 @@
-# My First Bundle
+# Azure IoT Hello World Bundle
 
-This is an empty bundle that porter has created to get you started!
+This bundle demonstrates most of the principles necessary to take an Azure IoT edge deployment and create a bundle for it, push it to ACR, and 
 
 # Contents
 
