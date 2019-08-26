@@ -9,6 +9,14 @@ description: "A porter configuration"
 invocationImage: squillace.azurecr.io/squillace/porter-iot-sql:0.2.0
 tag: squillace.azurecr.io/squillace/porter-iot-sql:0.2.0
 
+# Uncomment to support thick, or offline bundle exporting.
+#imageMap:
+#  websvc:
+#      description: "A simple web service"
+#      imageType: "docker"
+#      image: "jeremyrickard/devops-days-msp@sha256:85b1a9b4b60a4cf73a23517dad677e64edf467107fa7d58fce9c50e6a3e4c914"
+#      digest: "sha256:85b1a9b4b60a4cf73a23517dad677e64edf467107fa7d58fce9c50e6a3e4c914"
+
 # Uncomment out the line below to use a template Dockerfile for your invocation image
 dockerfile: Dockerfile.tmpl
 
