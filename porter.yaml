@@ -6,8 +6,8 @@
 name: porter-iot-sql
 version: 0.2.0
 description: "A porter configuration"
-invocationImage: squillace.azurecr.io/squillace/porter-iot-sql:0.2.0
-tag: squillace.azurecr.io/squillace/porter-iot-sql:0.2.0
+invocationImage: squillace/porter-iot-sql:0.2.0
+tag: squillace/porter-iot-sql:0.2.0
 
 # Uncomment to support thick, or offline bundle exporting.
 #imageMap:
@@ -57,7 +57,7 @@ install:
         - "--hub-name"
         - "{{ bundle.parameters.HUB_NAME }}"
         - "--content"
-        - "deployment.json"
+        - "iot-deployments/deployment.json"
         - "--target-condition"
         - "tags.name = '{{ bundle.parameters.CONDITION }}'"
 
@@ -102,7 +102,7 @@ uninstall:
         - "--hub-name"
         - "{{ bundle.parameters.HUB_NAME }}"
         - "--content"
-        - "undeployment.json"
+        - "iot-deployments/undeployment.json"
         - "--target-condition"
         - "tags.name = '{{ bundle.parameters.CONDITION }}'"
 
