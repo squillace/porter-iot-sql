@@ -5,7 +5,7 @@
 
 name: porter-iot-sql
 version: 0.2.0
-description: "A porter configuration"
+description: "A Porter bundle that installs IoT Edge modules on an IoT Edge device set using a query against the digital twins."
 invocationImage: squillace/porter-iot-sql:0.2.0
 tag: squillace/porter-iot-sql:0.2.0
 
